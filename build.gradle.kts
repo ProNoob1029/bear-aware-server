@@ -32,4 +32,5 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation("org.openpnp:opencv:4.9.0-0")
+    implementation("com.google.firebase:firebase-admin:9.3.0")
 }
