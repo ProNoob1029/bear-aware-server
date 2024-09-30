@@ -1,10 +1,12 @@
 package com.dpit.plugins
 
-import com.dpit.flow
+import com.dpit.cameraFlow
+import com.dpit.detectionChannel
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.launch
 import java.time.Duration
 
 fun Application.configureSockets() {
@@ -16,11 +18,19 @@ fun Application.configureSockets() {
     }
 
     routing {
-        webSocket("/ws") { // websocketSession
+        webSocket("/camera_input") { // websocketSession
             for (frame in incoming) {
                 if (frame is Frame.Binary) {
                     val data = frame.readBytes()
-                    flow.value = data
+                    cameraFlow.value = data
+                }
+                if (frame is Frame.Text) {
+                    println(frame.readText())
+
+
+                    launch {
+                        detectionChannel.send(Unit)
+                    }
                 }
             }
         }
