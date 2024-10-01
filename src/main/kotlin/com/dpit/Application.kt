@@ -12,13 +12,17 @@ import com.google.firebase.messaging.Message
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.util.logging.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.FileInputStream
+import java.util.logging.LogManager
 
 val cameraFlow = MutableStateFlow(ByteArray(0))
-val detectionChannel = Channel<Unit>(Channel.UNLIMITED)
+val bearFlow = MutableStateFlow("")
 
 const val serviceAccountFilepath = "/home/dragos/IdeaProjects/bear-aware-server/bear-aware-notifications-firebase-adminsdk-9zb80-9f6b349760.json"
 
@@ -33,27 +37,7 @@ fun main() {
     FirebaseApp.initializeApp(firebaseOptions)
 
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = false)
-
-
-
-    runBlocking {
-        for (i in detectionChannel) {
-            val message = Message.builder()
-                .putData("title", "new bear")
-                .setTopic(topic)
-                .setAndroidConfig(
-                    AndroidConfig.builder()
-                        .setPriority(AndroidConfig.Priority.HIGH)
-                        .build()
-                )
-                .build()
-
-            val response = FirebaseMessaging.getInstance().send(message)
-
-            println("Successfully sent message: $response")
-        }
-    }
+        .start(wait = true)
 }
 
 fun Application.module() {

@@ -1,12 +1,15 @@
 package com.dpit.plugins
 
+import com.dpit.bearFlow
 import com.dpit.cameraFlow
-import com.dpit.detectionChannel
+import com.dpit.topic
+import com.google.firebase.messaging.AndroidConfig
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.Message
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.launch
 import java.time.Duration
 
 fun Application.configureSockets() {
@@ -27,10 +30,19 @@ fun Application.configureSockets() {
                 if (frame is Frame.Text) {
                     println(frame.readText())
 
+                    val message = Message.builder()
+                        .putData("title", "new bear")
+                        .setTopic(topic)
+                        .setAndroidConfig(
+                            AndroidConfig.builder()
+                                .setPriority(AndroidConfig.Priority.HIGH)
+                                .build()
+                        )
+                        .build()
 
-                    launch {
-                        detectionChannel.send(Unit)
-                    }
+                    val response = FirebaseMessaging.getInstance().send(message)
+
+                    println("Successfully sent message: $response")
                 }
             }
         }

@@ -1,0 +1,12 @@
+<Configuration status="WARN">
+    <Loggers>
+        <!-- Disable WebSocket logging -->
+        <Logger name="io.ktor.websocket" level="error" />
+        <Logger name="io.ktor.server.websocket" level="error" />
+
+        <!-- Other logger settings -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
